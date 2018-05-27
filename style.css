@@ -20,21 +20,19 @@
 
 .inner{
 	height: auto;
-	
 }
- .track-list > div{
+
+
+.track-list > div{
  	width: 100%;
 	height:6em;
 }
 
-iframe, img{
-	width: 70em;
-}
 .track-list{
 	
 	width: 100%;
 	margin-left: auto;
   	margin-right: auto;
   	top:25%;
-  	position: sticky;
+  	/*position: sticky;*/
 }

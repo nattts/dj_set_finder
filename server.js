@@ -53,7 +53,7 @@ io.on('connection', function(sock){
 		
 		func(data).then(function(content){
 			io.sockets.emit('resp', content);
-			console.log(content);
+			
 		});
 		
 	});

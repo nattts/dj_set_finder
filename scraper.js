@@ -56,10 +56,8 @@ return req(www)
 	.then(function(linksArr){
 		return new Promise(function(resolve,reject){
 			arr = [];
-			
 			for (var each of linksArr){
 				f(each);
-				
 			}
 				
         			
@@ -105,6 +103,6 @@ return req(www)
 	});
 
 };
-//f('http://' + 'www.global-sets.com/');
+
 
 module.exports.f = f;
