@@ -3,6 +3,7 @@
 }
 
 .myText, .select{
+	
 	height: 40px;
     width: 50%;
     border: 2px solid #908b85;
@@ -10,16 +11,29 @@
 }
 
 .container{
-	
+	font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
 	max-width: 90%;
 	max-height: 100%;
 	margin-left: auto;
   	margin-right: auto;
 	
 }
-.resp-div{
-    height: 80px;
-    margin-top:20px; 
+.row{
+    display: block;
+    
+   
+}
+.col-sm{
+    display: block;
+   
+}
+iframe{
+    height: 100px;
+}
+.name{
+    padding-bottom: 20px;
+    
 }
 
 .inner{
@@ -33,10 +47,6 @@
 }
 
 .track-list{
-	
-	width: 100%;
-	margin-left: auto;
-  	margin-right: auto;
-  	top:25%;
-  	/*position: sticky;*/
+    padding-top: 3%
+
 }

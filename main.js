@@ -27,7 +27,7 @@ var socket = io.connect('http://127.0.0.1:7000/');
 		var addScript = function(artist,key,file){
 			
 			var div = document.createElement("div");
-				div.className = "wrapper";
+				div.className = "row";
 			var trackList = document.querySelector('.track-list').appendChild(div);
 			var name = document.createElement("p");
 				name.className = "name";
@@ -35,7 +35,7 @@ var socket = io.connect('http://127.0.0.1:7000/');
 				name.appendChild(nameText);
 				
 			var respDiv = document.createElement("div");
-				respDiv.className = "resp-div";
+				respDiv.className = "col-sm";
 
 			var script = document.createElement("script"); 
 				script.type = "text/javascript";
@@ -61,7 +61,7 @@ var socket = io.connect('http://127.0.0.1:7000/');
 			respDiv.appendChild(script);
 			respDiv.appendChild(iframe);
 			div.appendChild(respDiv);
-			div.appendChild(name);
+			respDiv.appendChild(name);
 		};
 
 return{
