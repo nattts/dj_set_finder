@@ -2,7 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require("path");
 var url = require("url");
-var func = require('./scraper').f;
+var scrape = require('./scraper').toScrape;
 var socket = require('socket.io');
 
 
@@ -51,15 +51,13 @@ io.on('connection', function(sock){
 	console.log('made connection');
 	sock.on('pass', function(data){
 		
-		func(data).then(function(content){
+		scrape(data).then(function(content){
 			io.sockets.emit('resp', content);
 			
 		});
 		
 	});
 });
-
-
 
 console.log('server listening on http://127.0.0.1:7000/');
 
