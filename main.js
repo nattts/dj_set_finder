@@ -4,7 +4,7 @@ var app = (function (){
 var socket = io.connect('http://127.0.0.1:7000/');
 
 	function optionSelector(){
-		var select = document.querySelector('.select');
+		var select = document.querySelector('.form-control');
 			select.addEventListener("change",function(){
 			for (var i=1;i<select.children.length;i++){
 				var choice = select.children[i];

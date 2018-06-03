@@ -1,11 +1,37 @@
 * {
   box-sizing: border-box;
 }
-
-.myText, .select{
+.top-bar{
+    margin-top: 3%;
+}
+.description{
+    margin-top: 3%;
+}
+.inner{
 	
+	margin-top: 4%;
+}
+
+img{
+    width: 7%;
+    height: 7%;
+}
+.in-inner{
+	he
+	 width: 80%
+}
+.form-group{
+    width: 30%;
+    display: inline-block;
+}
+.btn btn-light{
+	display: inline-block;
+}
+
+.myText, .form{
+	display: inline;
 	height: 40px;
-    width: 50%;
+    width: 20%;
     border: 2px solid #908b85;
     border-radius: 5px;
 }
@@ -21,7 +47,7 @@
 }
 .row{
     display: block;
-    
+    height: 12em;
    
 }
 .col-sm{
@@ -46,7 +72,4 @@ iframe{
 	
 }
 
-.track-list{
-    padding-top: 3%
 
-}
