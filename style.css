@@ -17,18 +17,25 @@ img{
     height: 7%;
 }
 .in-inner{
-	he
+	
 	 width: 80%
 }
 .form-group{
-    width: 30%;
+    width: 35%;
     display: inline-block;
 }
 .btn btn-light{
 	display: inline-block;
 }
+#input {
+	background:url(magnifying_glass.jpg); 
+	background-repeat: no-repeat; 
+    background-position:right top; 
+    padding-left:15px;
+    background-size: 50px;
+}
 
-.myText, .form{
+.myText{
 	display: inline;
 	height: 40px;
     width: 20%;
@@ -71,5 +78,6 @@ iframe{
  	width: 100%;
 	
 }
+
 
 
