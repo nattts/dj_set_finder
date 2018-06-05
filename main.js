@@ -1,7 +1,7 @@
 
 var app = (function (){
 
-var socket = io.connect('http://127.0.0.1:7000/');
+const socket = io.connect('http://127.0.0.1:7000/');
 
 	function optionSelector(){
 		var select = document.querySelector('.form-control');
@@ -27,72 +27,78 @@ var socket = io.connect('http://127.0.0.1:7000/');
 		var addScript = function(){
 			
 			var addZipScript = function(artist,key,file){
-				var div = document.createElement("div");
-					div.className = "row";
 				
+				var div = createElementWithClass("div","row");
 				var trackList = document.querySelector('.track-list').appendChild(div);
-				
-				var name = document.createElement("p");
-					name.className = "name";
+				var name = createElementWithClass("p", "name");
 					nameText = document.createTextNode(artist);  
-					name.appendChild(nameText);
-					
-				var respDiv = document.createElement("div");
-					respDiv.className = "col-sm";
-
+					appendElement(name,nameText);
+				var respDiv = createElementWithClass("div", "col-sm");
+				
 				var script = document.createElement("script"); 
 					script.type = "text/javascript";
 				var replacer = /""/;
 				 
 				var innerHTML = "var zippywww=\"\";var zippyfile=\"\";var zippytext=\"#000000\";var zippyback=\"#e8e8e8\";var zippyplay=\"#ff6600\";var zippywidth=280;var zippyauto=false;var zippyvol=80;var zippywave = \"#000000\";var zippyborder = \"#cccccc\";";
-				var replaced = innerHTML.replace(replacer , '\"' +key+ '\"');
-					script.innerHTML = replaced.replace(replacer, '\"' +file+ '\"');
+				var replaced = innerHTML.replace(replacer ,`\"${key}\"`);
+					script.innerHTML = replaced.replace(replacer,`\"${file}\"`);
 					
 
-				var iframe = document.createElement('iframe');
+				var iframe = createElementWithClass("iframe", "script-iframe");
 				var zippyLink ="http://api.zippyshare.com/api/jplayer_embed.jsp?key=\"\"&server=www\"\"&width=580";
 				
 				var replacedKey = zippyLink.replace(replacer, file);
 				var replacedWWW = replacedKey.replace(replacer,key);
-					iframe.className = "script-iframe";
+					
 					iframe.src = replacedWWW;
 					iframe.frameBorder = "0";
 					iframe.scrolling="no";
 					iframe.width = "580";
 
 
-				respDiv.appendChild(script);
-				respDiv.appendChild(iframe);
-				div.appendChild(respDiv);
-				respDiv.appendChild(name);
-				};
+				appendElement(respDiv,script);
+				appendElement(respDiv,iframe);
+				appendElement(div,respDiv);
+				appendElement(respDiv,name);
+			};
 
 			var addMixCloudScript = function (lnk){
-				var ending = "embed-html/";
-				var api = 'api';
-				var modified = "";
+				const ending = "embed-html/";
+				const api = 'api';
+				
 				var iframe = document.createElement('iframe');
 					iframe.width = "100%";
 					iframe.height = "120";
-					
 					iframe.src = lnk + ending;
 					iframe.src = iframe.src.replace("www",api);
-					
 					iframe.frameBorder="0";
 					iframe.scrolling="no";
 
-				var div = document.createElement("div");
-					div.className = "row";
-					div.appendChild(iframe);
+				var div = createElementWithClass("div", "row");
+					appendElement(div,iframe);
 				var trackList = document.querySelector('.track-list').appendChild(div);
 
-				};
+			};
+
+			var createElementWithClass = function(tag,classname){
+				var element = document.createElement(`${tag}`);
+					element.className = `${classname}`;
+					return element;
+			}	
+
+			var appendElement = function(parent,child){
+				return parent.appendChild(child);
+			}
 
 			return{
 				addZipScript:addZipScript,
-				addMixCloudScript:addMixCloudScript
+				addMixCloudScript:addMixCloudScript,
+				
 			};
+
 		}();	
+
+
 
 
 	function djSearch(){
@@ -103,6 +109,7 @@ var socket = io.connect('http://127.0.0.1:7000/');
 			var textContent = document.getElementById("input").value;		
 				return fetching(textContent)
 					.then(function(result){
+
 						for (var each of result){
 							addScript.addMixCloudScript(each);
 						}
@@ -117,21 +124,25 @@ var socket = io.connect('http://127.0.0.1:7000/');
 			 function fetching (txtcont){
 				return fetch(linkToFetch(txtcont))
 					.then(function(data) {
-						
 						var jsoned = data.json();
-						
 						return jsoned;
     				})
     				.then(function(obj){
     					var arr = []; 
+    					if(obj.data.length === 0){
+    						var trackList = document.querySelector('.track-list')
+    						var div = createElementWithClass("div","row");
+    						var note = createElementWithClass("p","text");
+    							note = document.createTextNode("no results"); 
+	    						appendElement(div,note);
+	    						appendElement(trackList,div);
+    					} else{
     					for (var d in Object.keys(obj.data)){
     						arr.push(obj.data[d].url);
     					}
-
+    					}
     					return arr;
     				})
-    				
-
     				.catch(function(error) {
    						console.log(error.message);
   					});
@@ -140,17 +151,10 @@ var socket = io.connect('http://127.0.0.1:7000/');
 		
   	}			  	
 
-		
-
-	
-
-	
-
 	var linkToFetch = function(str){
-		var linkToModify = "https://api.mixcloud.com/search/?q=party+time&type=cloudcast";
-			str = str.split(' ').join('');
-		var linkToFetch = linkToModify.replace(/[^q=]*\+\w*(?=&)/,str);
-			return linkToFetch;	
+    	str = str.split(' ').join('');
+    	var linkToModify = `https://api.mixcloud.com/search/?q=${str}&type=cloudcast`;
+		return linkToModify;	
 	};	
 
 return{
