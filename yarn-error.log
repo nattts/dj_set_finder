@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/Cellar/node/10.0.0/bin/node /usr/local/Cellar/yarn/1.6.0/libexec/bin/yarn.js add puppeteer
+  /usr/local/Cellar/node/10.0.0/bin/node /usr/local/Cellar/yarn/1.6.0/libexec/bin/yarn.js add log --dev
 
 PATH: 
   /Users/albicka/.npm-packages/bin:/usr/local/bin:/Users/albicka/.npm-global/bin/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/MacGPG2/bin:/Applications/Wireshark.app/Contents/MacOS

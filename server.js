@@ -4,9 +4,15 @@ var path = require("path");
 var url = require("url");
 var scrape = require('./scraper').toScrape;
 var socket = require('socket.io');
+var Log = require('log'),
+ logDebug = new Log('debug'); 
+ logError = new Log('error');
+ logInfo = new Log('info');
 
 
-var server = http.createServer().listen(7000);
+const PORT = 7000;
+
+var server = http.createServer().listen(PORT);
 
 server.on('request', function(request,response){
 	
@@ -48,7 +54,7 @@ server.on('request', function(request,response){
 
 var io = socket.listen(server);
 io.on('connection', function(sock){
-	console.log('made connection');
+	
 	sock.on('pass', function(data){
 		
 		scrape(data).then(function(content){
@@ -59,5 +65,5 @@ io.on('connection', function(sock){
 	});
 });
 
-console.log('server listening on http://127.0.0.1:7000/');
+logInfo.info(`server listening on http://127.0.0.1:${PORT}/`);
 

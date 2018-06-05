@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "log": "^1.4.0",
     "nodemon": "^1.17.2"
   },
   "dependencies": {
