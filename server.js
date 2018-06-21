@@ -18,7 +18,7 @@ server.on('request', function(request,response){
 	
 	var mimeTypes = {
         '.html': 'text/html',
-        '.js': 'text/javascript',
+      	'.js': 'text/javascript',
         '.css': 'text/css',
         '.json': 'application/json',
         '.png': 'image/png',
@@ -56,10 +56,10 @@ var io = socket.listen(server);
 io.on('connection', function(sock){
 	
 	sock.on('pass', function(data){
-		
+		logInfo.info(data);
 		scrape(data).then(function(content){
 			io.sockets.emit('resp', content);
-			
+			logInfo.info(content);
 		});
 		
 	});
