@@ -1,22 +1,22 @@
-var http = require('http');
-var fs = require('fs');
-var path = require("path");
-var url = require("url");
-var scrape = require('./scraper').toScrape;
-var socket = require('socket.io');
-var Log = require('log'),
- logDebug = new Log('debug'); 
- logError = new Log('error');
- logInfo = new Log('info');
+let http = require('http');
+let fs = require('fs');
+let path = require("path");
+let url = require("url");
+let scrape = require('./scraper').toScrape;
+let socket = require('socket.io');
+let Log = require('log'),
+logDebug = new Log('debug'); 
+logError = new Log('error');
+logInfo = new Log('info');
 
 
 const PORT = 7000;
 
-var server = http.createServer().listen(PORT);
+let server = http.createServer().listen(PORT);
 
 server.on('request', function(request,response){
 	
-	var mimeTypes = {
+	let mimeTypes = {
         '.html': 'text/html',
       	'.js': 'text/javascript',
         '.css': 'text/css',
@@ -33,26 +33,23 @@ server.on('request', function(request,response){
         '.svg': 'application/image/svg+xml'
     };
 	
-	var filePath = '.' + request.url;
+	let filePath = '.' + request.url;
 	if (filePath == './') {
         filePath = './index.html';
     }
     
-	var pathnameParsed = filePath.split('.').pop();
-	var ext = '.' + pathnameParsed;
-	var contentType = mimeTypes[ext] || 'application/octet-stream';
+	let pathnameParsed = filePath.split('.').pop();
+	let ext = '.' + pathnameParsed;
+	let contentType = mimeTypes[ext] || 'application/octet-stream';
 
-
-		fs.readFile(filePath,function(err,contents){
+	fs.readFile(filePath,function(err,contents){
 			response.writeHead(200, {'Content-Type': contentType, 'Access-Control-Allow-Origin': '*'});
 			response.end(contents, 'utf-8');
-
-			
-   		});
+	});
    		
 });
 
-var io = socket.listen(server);
+let io = socket.listen(server);
 io.on('connection', function(sock){
 	
 	sock.on('pass', function(data){
@@ -61,9 +58,8 @@ io.on('connection', function(sock){
 			io.sockets.emit('resp', content);
 			logInfo.info(content);
 		});
-		
 	});
 });
 
-logInfo.info(`server listening on http://127.0.0.1:${PORT}/`);
+logInfo.info(`running on http://127.0.0.1:${PORT}/`);
 

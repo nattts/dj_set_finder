@@ -22,156 +22,148 @@ window.onload = function(){
 
 
 },{"./modules/option.js":2,"./modules/pubsub.js":3,"./modules/search.js":4}],2:[function(require,module,exports){
-var pubsub = require("./pubsub.js")  ;
+let pubsub = require("./pubsub.js")  ;
 
-var optionModule = (function(){
+let optionModule = (function(){
 
 	const socket = io.connect('http://127.0.0.1:7000/');
-	var dropDownElement = document.querySelector('.form-control');
-	var trackList = document.querySelector('.track-list');
-	var trackListArray = Array.from(trackList.childNodes);
+	let isFull = false;
+	let dropDownElement = document.querySelector('.form-control');
+	let trackList = document.querySelector('.track-list');
+	let trackListArray = Array.from(trackList.childNodes);
 
 	
-	var appendElement = function (parent,child){
+	let appendElement = function (parent,child){
 		return parent.appendChild(child);
 	};
 
-	var createElementWithClass = function(tag,classname){
-		var element = document.createElement(`${tag}`);
+	let createElementWithClass = function(tag,classname){
+		let element = document.createElement(`${tag}`);
 			element.className = `${classname}`;
 			return element;
 	};
 
 	function reset(){
-		var that = this;
+		let that = this;
 		that.trackList = trackList;
 		trackListArray = Array.from(that.trackList.childNodes);
-		for (var n in trackListArray){
-			var item = trackListArray[n];
+		for (let n in trackListArray){
+			let item = trackListArray[n];
 			item.parentNode.removeChild(item);
 		}
 	}
 
 	function pubsubing(){
 		return new Promise(function(resolve,reject){
-			resolve(pubsub.publish('reset'));
+			let that = this;
+			that.isFull = true;
+			resolve(pubsub.publish('isFull', that.isFull));
 		});
 	}				
 
 	function socketing(){
 		return new Promise(function(resolve,reject){
-			var that = this;
+			let that = this;
 			that.socket = socket;
 			that.socket.on('resp', function(response){
 				resolve(response);
 	  		});
-				
-			
 		});
 	}
 
 	function optionSelector(){
+		let that = this;
+		that.isFull = isFull;
 		
-		pubsub.subscribe('reset',reset);
+		pubsub.subscribe('isFull',function(result){
+			that.isFull = result;
+		});
 		
 		dropDownElement.addEventListener("change",function(){
 			
+			if(that.isFull){
+				reset();
+				that.isFull = false;
+			} 
 
-			return pubsubing()
-			
-			.then(function(){
-				return selecting();
-			})
-			 .then(function(){
-			 	return socketing();
-			 	
-			 })
-			 .then(function(response){
-			 	for (var i in response){
-					var obj = response[i];
-		  			var key = Object.keys(obj);
-		  			addZipScript(obj[key[0]],obj[key[1]],obj[key[2]]);  
-  			
-  					}
-			 })
-			.catch(function (err) {
-				throw new Error("something went wrong"); 
-
-			});
-		
-
+			if(that.isFull === false){
+				return selecting()
+				
+				 .then(function(){
+				 	return socketing();
+				 	
+				 })
+				 .then(function(response){
+				 	for (let i in response){
+						let obj = response[i];
+			  			let key = Object.keys(obj);
+			  			addZipScript(obj[key[0]],obj[key[1]],obj[key[2]]);  
+	  				}
+				 })
+				 .then(function(){
+					return pubsubing();
+				 })
+				.catch(function (err) {
+					throw new Error("something went wrong"); 
+				});
+			}
 		});
-			
 	}		
 
 	
 	function selecting(){
 		return new Promise(function(resolve,reject){
-		try{
-		var that = this;
-		
+		let that = this;
 		that.dropDownElement = dropDownElement;
 		that.socket = socket;
-		var choiceValue = that.dropDownElement.value;
-		var choiceText = that.dropDownElement.options[that.dropDownElement.selectedIndex].text;
+		let choiceValue = that.dropDownElement.value;
+		let choiceText = that.dropDownElement.options[that.dropDownElement.selectedIndex].text;
 			
-		if(choiceValue === '1'){
-			that.socket.emit('pass',choiceText);
-			resolve(choiceText);
-		}	
-
-		}catch(e){
-			console.log(e);
-			console.log(e.message);
-		}
-
+			if(choiceValue === '1'){
+				that.socket.emit('pass',choiceText);
+				resolve(choiceText);
+			}
 		});
 	}
 			
-	var addZipScript = function(artist,key,file){
+	let addZipScript = function(artist,key,file){
 
-		var div = createElementWithClass("div","row");
+		let div = createElementWithClass("div","row");
 			appendElement(trackList,div);	
 		
-		var name = createElementWithClass("p", "name");
+		let name = createElementWithClass("p", "name");
 			nameText = document.createTextNode(artist);  
 			appendElement(name,nameText);
 	
 		
-		var script = document.createElement("script"); 
+		let script = document.createElement("script"); 
 			script.type = "text/javascript";
-		var replacer = /""/;
+		let replacer = /""/;
 		 
-		var innerHTML = "var zippywww=\"\";var zippyfile=\"\";var zippytext=\"#000000\";var zippyback=\"#e8e8e8\";var zippyplay=\"#ff6600\";var zippywidth=280;var zippyauto=false;var zippyvol=80;var zippywave = \"#000000\";var zippyborder = \"#cccccc\";";
-		var replaced = innerHTML.replace(replacer ,`\"${key}\"`);
+		let innerHTML = "let zippywww=\"\";let zippyfile=\"\";let zippytext=\"#000000\";let zippyback=\"#e8e8e8\";let zippyplay=\"#ff6600\";let zippywidth=280;let zippyauto=false;let zippyvol=80;let zippywave = \"#000000\";let zippyborder = \"#cccccc\";";
+		let replaced = innerHTML.replace(replacer ,`\"${key}\"`);
 			script.innerHTML = replaced.replace(replacer,`\"${file}\"`);
 			
 
-		var iframe = createElementWithClass("iframe", "script-iframe");
-		var zippyLink ="http://api.zippyshare.com/api/jplayer_embed.jsp?key=\"\"&server=www\"\"&width=580";
+		let iframe = createElementWithClass("iframe", "script-iframe");
+		let zippyLink ="http://api.zippyshare.com/api/jplayer_embed.jsp?key=\"\"&server=www\"\"&width=580";
 		
-		var replacedKey = zippyLink.replace(replacer, file);
-		var replacedWWW = replacedKey.replace(replacer,key);
+		let replacedKey = zippyLink.replace(replacer, file);
+		let replacedWWW = replacedKey.replace(replacer,key);
 			
 			iframe.src = replacedWWW;
 			iframe.frameBorder = "0";
 			iframe.scrolling="no";
 			iframe.width = "580";
-			//iframe.autotart = "true";
-
-		
+			
 		appendElement(div,script);
 		appendElement(div,iframe);
 		appendElement(div,name);
 	};
 	
-	
-
 	return {
 
 		optionSelector:optionSelector
-		
-	
 	};
 
 	
@@ -181,91 +173,97 @@ var optionModule = (function(){
 module.exports = optionModule;
 
 },{"./pubsub.js":3}],3:[function(require,module,exports){
-var pubsub = (function() {
+let pubsub = (function() {
 
-var topics = {};
+let topics = {};
 
   return {
     subscribe: function(topic, listener) {
-      // создаем объект topic, если еще не создан
-      if(!topics[topic]) topics[topic] = { queue: [] };
+    	if(!topics[topic]) topics[topic] = { queue: [] };
+			let index = topics[topic].queue.push(listener) -1;
 
-      // добавляем listener в очередь
-      var index = topics[topic].queue.push(listener) -1;
-
-	// предоставляем возможность удаления темы
-	return {
-		remove: function() {
+		return {
+			remove: function() {
 			delete topics[topic].queue[index];
-		}
-	};
-    },
+			}
+		};
+  },
+
     publish: function(topic, info) {
-      // если темы не существует или нет подписчиков, не делаем ничего
-      if(!topics[topic] || !topics[topic].queue.length) return;
-
-      // проходим по очереди и вызываем подписки
-      var items = topics[topic].queue;
-      items.forEach(function(item) {
-      		item(info || {});
-      });
-    }
-  
-
-};
+    	if(!topics[topic] || !topics[topic].queue.length) return;
+    		let items = topics[topic].queue;
+          items.forEach(function(item) {
+      			item(info || {});
+      			});
+      }
+  	};
 
 })();
 
 module.exports = pubsub;
 },{}],4:[function(require,module,exports){
-var pubsub = require("./pubsub.js");
+let pubsub = require("./pubsub.js");
 
-var djSearchModule = (function(){
+let djSearchModule = (function(){
 	
+	let isFull = false;
+	let trackList = document.querySelector('.track-list');
+	let dropDownElement = document.querySelector('.form-control');
 
-	var trackList = document.querySelector('.track-list');
-	var trackListArray = Array.from(trackList.childNodes);
-
-	var appendElement = function (parent,child){
+	let appendElement = function (parent,child){
 		return parent.appendChild(child);
 	};
 
-	var createElementWithClass = function(tag,classname){
-		var element = document.createElement(`${tag}`);
+	let createElementWithClass = function(tag,classname){
+		let element = document.createElement(`${tag}`);
 			element.className = `${classname}`;
 			return element;
-	};
+		};
 
-function reset(){
-		var that = this;
+	function reset(){
+		let that = this;
 		that.trackList = trackList;
 		trackListArray = Array.from(that.trackList.childNodes);
-		for (var n in trackListArray){
-			var item = trackListArray[n];
+		for (let n in trackListArray){
+			let item = trackListArray[n];
 			item.parentNode.removeChild(item);
 		}
 	}
 
-function pubsubing(){
+	function pubsubing(){
 		return new Promise(function(resolve,reject){
-			resolve(pubsub.publish('reset'));
+			let that = this;
+			that.isFull = true;
+			resolve(pubsub.publish('isFull', that.isFull));
 		});
 	}		
 
 
-function djSearch(){
+	function djSearch(){
 		
-		pubsub.subscribe('reset',reset);
+		let that = this;
+		that.isFull = isFull;
+		that.dropDownElement = dropDownElement;
 		
-		var button = document.querySelector('.btn');
+		pubsub.subscribe('isFull',function(result){
+			that.isFull = result;
+		});
+		
+		let button = document.querySelector('.btn');
 			button.addEventListener("click",function(){
 			
-			var textContent = document.getElementById("input").value;		
+			let textContent = document.getElementById("input").value;		
 				
-				return pubsubing()
-					.then(function(){
-						return fetching(textContent);
-					})
+				if(that.isFull){
+					reset();
+					that.isFull = false;
+					that.dropDownElement.value = '0';
+				} 
+
+				if(that.isFull === false){
+				
+					return fetching(textContent)
+				
 					.then(function(data){
 						return jsoning(data);
 					})
@@ -276,45 +274,44 @@ function djSearch(){
 						
 						
 						if (result != undefined){
-							for (var each of result){
+							for (let each of result){
 								addMixCloudScript(each); 
 							}
 						}
 						
 					})
+					.then(function(){
+						return pubsubing();
+					})
 					.catch(function(error) {
    						console.log(error.message);
   					});
-
-			
-			 });
-			
-}
+			}
+		});
+	}
 
 	function gettingArrayOfLinks(jsonData){
 		return new Promise(function(resolve,reject){
-			var links = []; 
+			let links = []; 
 			if(jsonData.data.length === 0){
 					
-				var div = createElementWithClass("div","row");
-				var note = createElementWithClass("p","text");
-					note = document.createTextNode("no results"); 
+				let div = createElementWithClass("div","row");
+				let note = createElementWithClass("p","text");
+					note = document.createTextNode("no results or busy server. try again later"); 
 					appendElement(div,note);
 					appendElement(trackList,div);
-					
-						
-				} else{
-				for (var d in Object.keys(jsonData.data)){
-					links.push(jsonData.data[d].url);
+				} else {
+					for (let d in Object.keys(jsonData.data)){
+						links.push(jsonData.data[d].url);
+					}
 				}
-			}
 			resolve(links);
 		});
 	}	
 
 	function jsoning(dataFromFetch){
 		return new Promise(function(resolve,reject){
-			var jsoned = dataFromFetch.json();
+			let jsoned = dataFromFetch.json();
 			resolve(jsoned);
 		});
 	}
@@ -322,16 +319,14 @@ function djSearch(){
 	function fetching (txtcont){
 		return new Promise(function(resolve,reject){
 		resolve(fetch(linkToFetch(txtcont)));
-
 		});
-			
 	}
 
-	var addMixCloudScript = function (lnk){
+	let addMixCloudScript = function (lnk){
 		const ending = "embed-html/";
 		const api = 'api';
 		
-		var iframe = document.createElement('iframe');
+		let iframe = document.createElement('iframe');
 			iframe.width = "100%";
 			iframe.height = "120";
 			iframe.src = lnk + ending;
@@ -339,25 +334,20 @@ function djSearch(){
 			iframe.frameBorder="0";
 			iframe.scrolling="no";
 
-		var div = createElementWithClass("div", "row");
+		let div = createElementWithClass("div", "row");
 
-			
 		appendElement(div,iframe);
 		appendElement(trackList,div);		
-		
-		
 	};
 	
-	var linkToFetch = function(str){
+	let linkToFetch = function(str){
     	str = str.split(' ').join('');
-    	var linkToModify = `https://api.mixcloud.com/search/?q=${str}&type=cloudcast`;
+    	let linkToModify = `https://api.mixcloud.com/search/?q=${str}&type=cloudcast`;
 		return linkToModify;	
 	};	
 
 	return {
-
 		djSearch:djSearch
-	
 	};
 
 
